@@ -2,6 +2,8 @@ class BasicConfig:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
+    SECRET_KEY = 'secret'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevelopmentConfig(BasicConfig):
