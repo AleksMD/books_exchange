@@ -78,18 +78,24 @@ class TestUserEntity(unittest.TestCase):
         data_to_be_replaced = json.dumps({'name': 'Aleks Grant', 'email': 'aleksgrant@gmail.com'})
         partial_data = json.dumps({'name': 'Aleks Grant'})
         valid_response_put = self.app.test_client().put('/users/2',
-                                                  data=data_to_be_replaced,
-                                                  content_type='application/json')
+                                                        data=data_to_be_replaced,
+                                                        content_type='application/json')
         invalid_response_put = self.app.test_client().put('/users/1',
                                                           data=partial_data,
                                                           content_type='application/json')
         self.assertEqual(valid_response_put.status_code, 200)
-        self.assertEqual(invalid_response_put.status_code, 404)
+        self.assertEqual(invalid_response_put.status_code, 400)
         response_get_1 = self.app.test_client().get('/users/2')
         response_get_2 = self.app.test_client().get('/users/1')
         self.user2.update({'name': 'Aleks Grant', 'email': 'aleksgrant@gmail.com'})
         self.assertEqual(response_get_1.json, self.user2)
         self.assertEqual(response_get_2.json, self.user1)
+
+    def test_delete_user(self):
+        response_delete_user = self.app.test_client().delete('/users/1')
+        self.assertEqual(response_delete_user.status_code, 200)
+        response_get_user = self.app.test_client().get('/users/1')
+        self.assertEqual(response_get_user.status_code, 404)
 
 
 if __name__ == '__main__':
