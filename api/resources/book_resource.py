@@ -1,12 +1,13 @@
 from flask import request
 from flask_restful import Resource, marshal_with
 from api.db_models.book_model import Books
-from api.structures.book_structure import book_structure
+from api.db_models.user_model import Users
+from api.structures.book_structure import individual_book_structure
 from extensions import db
 
 
 class Book(Resource):
-    @marshal_with(book_structure)
+    @marshal_with(individual_book_structure)
     def get(self, book_id=None):
         if book_id:
             return Books.query.filter_by(id=book_id).first_or_404()

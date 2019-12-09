@@ -2,6 +2,7 @@ from flask import request, json
 from flask_restful import Resource, marshal_with
 
 from api.blueprints.parsers import user_parser_put
+from api.db_models.book_model import Books
 from api.db_models.user_model import Users
 from extensions import db
 from api.structures.user_structure import user_structure
@@ -24,23 +25,45 @@ class User(Resource):
         db.session.commit()
         return 201
 
-    def put(self, id_):
+    def put(self, user_id):
         data = user_parser_put.parse_args()
-        user_to_be_updated = Users.query.filter_by(id=id_).first_or_404()
+        user_to_be_updated = Users.query.filter_by(id=user_id).first_or_404()
         for key, value in data.items():
             if value:
                 setattr(user_to_be_updated, key, value)
         db.session.commit()
         return f'User {user_to_be_updated.name} was successfully updated'
 
-    def patch(self, id_):
-        user_to_update = Users.query.filter_by(id=id_).first_or_404()
+    def patch(self, user_id):
+        user_to_update = Users.query.filter_by(id=user_id).first_or_404()
         for key, value in request.get_json().items():
             setattr(user_to_update, key, value)
         return 200
 
-    def delete(self, id_):
-        user_to_be_deleted = Users.query.filter_by(id=id_).first_or_404()
+    def delete(self, user_id):
+        user_to_be_deleted = Users.query.filter_by(id=user_id).first_or_404()
         db.session.delete(user_to_be_deleted)
         db.session.commit()
-        return f'User with id: {id_} was deleted from database'
+        return f'User with id: {user_id} was deleted from database'
+
+
+class BooksBeingRead(Resource):
+    def post(self, user_id=None, book_id=None):
+        print(user_id)
+        print(book_id)
+        book = Books.query.filter_by(id=book_id).first_or_404()
+        user = Users.query.filter_by(id=user_id).first_or_404()
+        user.books_in_use.append(book)
+        db.session.commit()
+        return 'Success'
+
+class HideBook(Resource):
+    def patch(self, user_id=None):
+        book_id = request.get_json().get('book_id')
+        book = Books.query.filter_by(id=book_id).first_or_404()
+
+        if user_id and user_id == book.owner:
+            book.hidden = True
+            db.session.commit()
+            return 'Book was hidden from publicity'
+        return 'Something went wrong.'

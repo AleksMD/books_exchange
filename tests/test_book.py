@@ -12,7 +12,7 @@ class TestBookEntity(TestCase):
         self.app.app_context().push()
         db.create_all()
         self.book1 = {'id': 1,
-                      'name': 'The Overstory',
+                      "name": 'The Overstory',
                       'author': 'Richard Powers',
                       'year_of_publication': 2018,
                       'edition': '1st',

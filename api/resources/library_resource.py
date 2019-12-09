@@ -20,7 +20,7 @@ class Libraries(Resource):
             book_id = request.get_json().get('book_id')
             user = Users.query.filter_by(id=user_id).first_or_404()
             book = Books.query.filter_by(id=book_id).first_or_404()
-            user.library.append(book)
+            user.user_library.append(book)
             db.session.commit()
             return 'Book successfully added to your library.', 200
         return 'You should provide a user ID in order to append book to library'
