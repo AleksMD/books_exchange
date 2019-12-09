@@ -1,4 +1,3 @@
-from api.db_models.library_model import library
 from extensions import db
 
 
@@ -9,4 +8,5 @@ class Books(db.Model):
     edition = db.Column(db.String, nullable=False)
     year_of_publication = db.Column(db.Integer, nullable=False)
     translator = db.Column(db.String)
+    owner = db.Column(db.Integer, db.ForeignKey('users.id'))
     hidden = db.Column(db.Boolean, default=False)

@@ -1,6 +1,6 @@
 from extensions import db
 
-library = db.Table('library',
+want_to_read = db.Table('want_to_read',
                    db.Column('owner_id', db.Integer, db.ForeignKey('users.id')),
                    db.Column('book_id', db.Integer, db.ForeignKey('books.id')))
 

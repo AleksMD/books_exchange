@@ -12,8 +12,8 @@ individual_book_structure = {
         'year_of_publication': fields.Integer,
         'edition': fields.String,
         'translator': fields.String,
-        'owner': fields.Nested(user_structure, attribute='user_library'),
-        'current_user': fields.Nested(user_structure, attribute='currently_use')
+        'owner': fields.Nested(user_structure, attribute='library'),
+        'current_user': fields.Nested(user_structure, attribute='currently_reading')
 }
 user_library_book_structure = {
         'id': fields.Integer,
@@ -21,6 +21,5 @@ user_library_book_structure = {
         'author': fields.String,
         'year_of_publication': fields.Integer,
         'edition': fields.String,
-        'translator': fields.String,
-        'current_user': fields.Nested(user_structure, attribute='currently_use')
+        'translator': fields.String
 }

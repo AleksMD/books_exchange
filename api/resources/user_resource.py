@@ -5,7 +5,7 @@ from api.blueprints.parsers import user_parser_put
 from api.db_models.book_model import Books
 from api.db_models.user_model import Users
 from extensions import db
-from api.structures.user_structure import user_structure
+from api.structures.user_structure import user_structure, user_wish_list_structure
 
 
 class User(Resource):
@@ -56,6 +56,22 @@ class BooksBeingRead(Resource):
         user.books_in_use.append(book)
         db.session.commit()
         return 'Success'
+
+
+class WantToRead(Resource):
+    @marshal_with(user_wish_list_structure)
+    def get(self, user_id=None, **kwargs):
+        if user_id:
+            return Users.query.filter_by(id=user_id).first_or_404()
+        return Users.query.all()
+
+    def post(self, user_id=None, book_id=None):
+        if user_id and book_id:
+            user = Users.query.filter_by(id=user_id).first_or_404()
+            book = Books.query.filter_by(id=book_id).first_or_404()
+            user.wish_list.append(book)
+            db.session.commit()
+            return 'Book appended to your wish list'
 
 class HideBook(Resource):
     def patch(self, user_id=None):
