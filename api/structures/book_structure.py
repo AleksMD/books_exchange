@@ -6,5 +6,6 @@ book_structure = {
         'author': fields.String,
         'year_of_publication': fields.Integer,
         'edition': fields.String,
-        'translator': fields.String
+        'translator': fields.String,
+        'current_user_id': fields.Integer
 }

@@ -9,10 +9,10 @@ from api.structures.user_structure import user_structure
 
 class User(Resource):
     @marshal_with(user_structure)
-    def get(self, id_=None):
+    def get(self, user_id=None):
         data = request.get_json()
-        if id_:
-            return Users.query.filter_by(id=id_).first_or_404()
+        if user_id:
+            return Users.query.filter_by(id=user_id).first_or_404()
         if data:
             return Users.query.filter_by(**data).first_or_404()
         return Users.query.all()
