@@ -5,7 +5,7 @@ from api.blueprints.parsers import user_parser_put
 from api.db_models.book_model import Books
 from api.db_models.user_model import Users
 from extensions import db
-from api.structures.user_structure import user_structure, user_wish_list_structure
+from api.structures.user_structure import user_structure, user_wish_list_structure, user_currently_reading
 
 
 class User(Resource):
@@ -48,14 +48,26 @@ class User(Resource):
 
 
 class BooksBeingRead(Resource):
+    @marshal_with(user_currently_reading)
+    def get(self, user_id=None, **kwargs):
+        if user_id:
+            return Users.query.filter_by(id=user_id).first_or_404()
+        return Users.query.all()
+
     def post(self, user_id=None, book_id=None):
-        print(user_id)
-        print(book_id)
         book = Books.query.filter_by(id=book_id).first_or_404()
         user = Users.query.filter_by(id=user_id).first_or_404()
-        user.books_in_use.append(book)
+        user.books_being_read.append(book)
         db.session.commit()
-        return 'Success'
+        return 'Book successfully appended to your current reader\'s list'
+
+    def delete(self, user_id=None, book_id=None, **kwargs):
+        if user_id and book_id:
+            user = Users.query.filter_by(id=user_id).first_or_404()
+            book = Books.query.filter_by(id=book_id).first_or_404()
+            user.books_being_read.remove(book)
+            db.session.commit()
+            return 'Book was successfully removed from your current reader\'s list'
 
 
 class WantToRead(Resource):
@@ -65,13 +77,22 @@ class WantToRead(Resource):
             return Users.query.filter_by(id=user_id).first_or_404()
         return Users.query.all()
 
-    def post(self, user_id=None, book_id=None):
+    def post(self, user_id=None, book_id=None, **kwargs):
         if user_id and book_id:
             user = Users.query.filter_by(id=user_id).first_or_404()
             book = Books.query.filter_by(id=book_id).first_or_404()
             user.wish_list.append(book)
             db.session.commit()
             return 'Book appended to your wish list'
+
+    def delete(self, user_id=None, book_id=None, **kwargs):
+        if user_id and book_id:
+            user = Users.query.filter_by(id=user_id).first_or_404()
+            book = Books.query.filter_by(id=book_id).first_or_404()
+            user.wish_list.remove(book)
+            db.session.commit()
+            return 'Book was successfully removed from your wish list'
+
 
 class HideBook(Resource):
     def patch(self, user_id=None):

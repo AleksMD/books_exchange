@@ -10,11 +10,22 @@ class TestUserEntity(unittest.TestCase):
         self.app = create_app('dev')
         self.app.app_context().push()
         db.create_all()
-        self.user1 = {'id': 1, 'name': 'John Smith', 'email': 'johnsmith@gmail.com'}
-        self.user2 = {'id': 2, 'name': 'Jane Doe', 'email': 'janedoe@gmail.com'}
+        self.user1 = {'id': 1,
+                      'name': 'John Smith',
+                      'email': 'johnsmith@gmail.com',
+                      }
+        self.user2 = {'id': 2,
+                      'name': 'Jane Doe',
+                      'email': 'janedoe@gmail.com'
+                      }
         db.session.add(Users(**self.user1))
         db.session.add(Users(**self.user2))
         db.session.commit()
+        self.additional_columns_after_db_created = {'currently_reading': [],
+                                                    'library': [],
+                                                    'wish_list': []}
+        self.user1.update(self.additional_columns_after_db_created)
+        self.user2.update(self.additional_columns_after_db_created)
 
     def tearDown(self) -> None:
         db.session.remove()
@@ -61,6 +72,7 @@ class TestUserEntity(unittest.TestCase):
         response_get = self.app.test_client().get('/users',
                                                   data=json.dumps({'name': 'Denis Vasilov'}),
                                                   content_type='application/json')
+        new_user.update(self.additional_columns_after_db_created)
         self.assertEqual(response_post.status_code, 200)
         self.assertEqual(response_get.json, new_user)
 

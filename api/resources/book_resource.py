@@ -14,10 +14,11 @@ class Book(Resource):
         data = request.get_json()
         return Books.query.filter_by(**data).all() if data and any(data.values()) else Books.query.all()
 
-    def post(self):
+    def post(self, user_id=None):
         data = request.get_json()
+        owner = Users.query.filter_by(id=user_id).first_or_404()
         if data:
-            db.session.add(Books(**data))
+            db.session.add(Books(owner=owner.id, **data))
             db.session.commit()
             return 200
         return 'All fields should be fulfilled'
