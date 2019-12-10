@@ -8,17 +8,6 @@ from tests.general_test_settings import CommonTestSettings
 class TestUserEntity(CommonTestSettings, unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.user1 = {'id': 1,
-                      'name': 'John Smith',
-                      'email': 'johnsmith@gmail.com',
-                      }
-        self.user2 = {'id': 2,
-                      'name': 'Jane Doe',
-                      'email': 'janedoe@gmail.com'
-                      }
-        db.session.add(Users(**self.user1))
-        db.session.add(Users(**self.user2))
-        db.session.commit()
         self.additional_columns_after_db_created = {'currently_reading': [],
                                                     'library': [],
                                                     'wish_list': []}

@@ -11,26 +11,9 @@ from tests.general_test_settings import CommonTestSettings
 class TestBookEntity(CommonTestSettings, TestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.book1 = {'id': 1,
-                      "name": 'The Overstory',
-                      'author': 'Richard Powers',
-                      'year_of_publication': 2018,
-                      'edition': '1st',
-                      'translator': None
-                      }
-        self.book2 = {'id': 2,
-                      'name': 'Test-Driven Development with Python',
-                      'author': 'Percival Harry J.W.',
-                      'year_of_publication': 2014,
-                      'edition': '2nd',
-                      'translator': None
-                      }
-        self.user = Users(**{'name': 'Jane Smith', 'email': 'janesmith@gmail.com'})
-        db.session.add(self.user)
+        db.session.add(Books(owner=self.user2['id'], **self.book1))
         db.session.commit()
-        db.session.add(Books(owner=self.user.id, **self.book1))
-        db.session.commit()
-        self.book1.update({'owner': {'name': 'Jane Smith', 'email': 'janesmith@gmail.com'}, 'current_reader': []})
+        self.book1.update({'owner': {'name': self.user2['name'], 'email': self.user2['email']}, 'current_reader': []})
 
     def test_post_new_book(self):
         book_to_post = json.dumps(self.book2)

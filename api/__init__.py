@@ -19,4 +19,5 @@ user_api.add_resource(BooksBeingRead, '/users/currently_reading/<int:user_id>',
                       '/users/<int:user_id>/book_to_read/<int:book_id>',
                       '/users/<int:user_id>/book_to_read/<int:book_id>/remove')
 user_api.add_resource(WantToRead, '/users/all_wishes', '/users/<int:user_id>/wish_list',
-                      '/users/<int:user_id>/wish_list/<int:book_id>')
+                      '/users/<int:user_id>/update_wish_list/add_book/<int:book_id>',
+                      '/users/<int:user_id>/update_wish_list/remove_book/<int:book_id>')
