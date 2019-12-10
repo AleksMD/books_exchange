@@ -5,15 +5,13 @@ from api.db_models.book_model import Books
 from extensions import db
 from api.db_models.user_model import Users
 from main import create_app
+from tests.general_test_settings import CommonTestSettings
 
 
-class TestLibraryEntity(TestCase):
+class TestLibraryEntity(CommonTestSettings, TestCase):
 
     def setUp(self) -> None:
-        self.app = create_app('dev')
-        self.app.app_context().push()
-        db.drop_all()
-        db.create_all()
+        super().setUp()
         self.book1 = {'id': 1,
                       "name": 'The Overstory',
                       'author': 'Richard Powers',
@@ -83,5 +81,11 @@ class TestLibraryEntity(TestCase):
         self.assertEqual(get_lib_resp.json, expected_after_removed)
 
 
+class TestUserWishList(CommonTestSettings, TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+    def test_get_all_wish_lists_from_all_users(self):
+        
 if __name__ == '__main__':
     unittest.main()

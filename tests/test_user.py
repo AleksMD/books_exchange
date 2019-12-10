@@ -1,15 +1,13 @@
 import json
 import unittest
-from main import create_app
 from extensions import db
 from api.db_models.user_model import Users
+from tests.general_test_settings import CommonTestSettings
 
 
-class TestUserEntity(unittest.TestCase):
+class TestUserEntity(CommonTestSettings, unittest.TestCase):
     def setUp(self) -> None:
-        self.app = create_app('dev')
-        self.app.app_context().push()
-        db.create_all()
+        super().setUp()
         self.user1 = {'id': 1,
                       'name': 'John Smith',
                       'email': 'johnsmith@gmail.com',

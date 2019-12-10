@@ -1,20 +1,16 @@
 from unittest import TestCase
 import unittest
-
-from api.db_models.user_model import Users
-from extensions import db
-from api.db_models.book_model import Books
-from main import create_app
 import json
 
+from api.db_models.book_model import Books
+from api.db_models.user_model import Users
+from extensions import db
+from tests.general_test_settings import CommonTestSettings
 
-class TestBookEntity(TestCase):
 
+class TestBookEntity(CommonTestSettings, TestCase):
     def setUp(self) -> None:
-        self.app = create_app('dev')
-        self.app.app_context().push()
-        db.drop_all()
-        db.create_all()
+        super().setUp()
         self.book1 = {'id': 1,
                       "name": 'The Overstory',
                       'author': 'Richard Powers',
@@ -35,10 +31,6 @@ class TestBookEntity(TestCase):
         db.session.add(Books(owner=self.user.id, **self.book1))
         db.session.commit()
         self.book1.update({'owner': {'name': 'Jane Smith', 'email': 'janesmith@gmail.com'}, 'current_reader': []})
-
-    def tearDown(self) -> None:
-        db.session.remove()
-        db.drop_all()
 
     def test_post_new_book(self):
         book_to_post = json.dumps(self.book2)
