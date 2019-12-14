@@ -1,5 +1,7 @@
 from flask import request, json
 from flask_restful import Resource, marshal_with
+from sqlalchemy import and_
+from sqlalchemy.orm import contains_eager
 
 from api.blueprints.parsers import user_parser_put
 from api.db_models.book_model import Books
@@ -16,7 +18,9 @@ class User(Resource):
             return Users.query.filter_by(id=user_id).first_or_404()
         if data:
             return Users.query.filter_by(**data).first_or_404()
-        return Users.query.all()
+
+        return db.session.query(Users).join(Users.library).filter(Books.hidden == False).\
+            options(contains_eager(Users.library)).all()
 
     def post(self):
         data = json.loads(request.get_data())
