@@ -4,7 +4,7 @@ from api.db_models.library_model import want_to_read, reading_now
 
 
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     library = db.relationship('Books',  backref='lib_owner')

@@ -6,17 +6,17 @@ user_structure = {
 }
 
 individual_book_structure = {
-        'id': fields.Integer,
+        'book_id': fields.Integer,
         'name': fields.String,
         'author': fields.String,
         'year_of_publication': fields.Integer,
         'edition': fields.String,
         'translator': fields.String,
-        'owner': fields.Nested(user_structure, attribute='library'),
+        'owner': fields.Nested(user_structure, attribute='lib_owner'),
         'current_reader': fields.Nested(user_structure, attribute='currently_reading')
 }
 user_library_book_structure = {
-        'id': fields.Integer,
+        'book_id': fields.Integer,
         'name': fields.String,
         'author': fields.String,
         'year_of_publication': fields.Integer,
@@ -25,10 +25,11 @@ user_library_book_structure = {
 }
 
 currently_being_read_book_structure = {
+        'book_id': fields.Integer,
         'name': fields.String,
         'author': fields.String,
         'year_of_publication': fields.Integer,
         'edition': fields.String,
         'translator': fields.String,
-        'owner': fields.Nested(user_structure, attribute='library')
+        'owner': fields.Nested(user_structure, attribute='lib_owner')
 }

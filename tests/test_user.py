@@ -11,8 +11,8 @@ class TestUserEntity(CommonTestSettings, unittest.TestCase):
         self.additional_columns_after_db_created = {'currently_reading': [],
                                                     'library': [],
                                                     'wish_list': []}
-        self.user1.update(self.additional_columns_after_db_created)
-        self.user2.update(self.additional_columns_after_db_created)
+        #self.user1.update(self.additional_columns_after_db_created)
+        #self.user2.update(self.additional_columns_after_db_created)
 
     def tearDown(self) -> None:
         db.session.remove()
@@ -51,7 +51,7 @@ class TestUserEntity(CommonTestSettings, unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post_new_user(self):
-        new_user = {'id': 3, 'name': 'Denis Vasilov', 'email': 'teacher_denis@gmail.com'}
+        new_user = {'user_id': 3, 'name': 'Denis Vasilov', 'email': 'teacher_denis@gmail.com'}
         data_to_post = json.dumps(new_user)
         response_post = self.app.test_client().post('/users',
                                                     data=data_to_post,
@@ -59,7 +59,6 @@ class TestUserEntity(CommonTestSettings, unittest.TestCase):
         response_get = self.app.test_client().get('/users',
                                                   data=json.dumps({'name': 'Denis Vasilov'}),
                                                   content_type='application/json')
-        new_user.update(self.additional_columns_after_db_created)
         self.assertEqual(response_post.status_code, 200)
         self.assertEqual(response_get.json, new_user)
 
@@ -92,7 +91,7 @@ class TestUserEntity(CommonTestSettings, unittest.TestCase):
 
     def test_delete_user(self):
         response_delete_user = self.app.test_client().delete('/users/1')
-        self.assertEqual(response_delete_user.status_code, 200)
+        self.assertEqual(response_delete_user.status_code, 204)
         response_get_user = self.app.test_client().get('/users/1')
         self.assertEqual(response_get_user.status_code, 404)
 

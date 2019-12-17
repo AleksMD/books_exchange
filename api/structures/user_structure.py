@@ -2,9 +2,13 @@ from flask_restful import fields
 
 from api.structures.book_structure import (individual_book_structure, user_library_book_structure,
                                            currently_being_read_book_structure)
-
-user_structure = {
-    'id': fields.Integer,
+general_user_structure = {
+    'user_id': fields.Integer,
+    'name': fields.String,
+    'email': fields.String
+}
+detailed_user_structure = {
+    'user_id': fields.Integer,
     'name': fields.String,
     'email': fields.String,
     'library': fields.Nested(user_library_book_structure),

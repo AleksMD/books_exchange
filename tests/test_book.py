@@ -3,7 +3,6 @@ import unittest
 import json
 
 from api.db_models.book_model import Books
-from api.db_models.user_model import Users
 from extensions import db
 from tests.general_test_settings import CommonTestSettings
 
@@ -11,7 +10,7 @@ from tests.general_test_settings import CommonTestSettings
 class TestBookEntity(CommonTestSettings, TestCase):
     def setUp(self) -> None:
         super().setUp()
-        db.session.add(Books(owner=self.user2['id'], **self.book1))
+        db.session.add(Books(owner=self.user2['user_id'], **self.book1))
         db.session.commit()
         self.book1.update({'owner': {'name': self.user2['name'], 'email': self.user2['email']}, 'current_reader': []})
 
@@ -21,7 +20,7 @@ class TestBookEntity(CommonTestSettings, TestCase):
                                                      data=book_to_post,
                                                      content_type='application/json')
         resp_get_book = self.app.test_client().get('/books/1')
-        self.assertEqual(resp_post_book.status_code, 200)
+        self.assertEqual(resp_post_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
     def test_get_all_books(self):
@@ -48,7 +47,7 @@ class TestBookEntity(CommonTestSettings, TestCase):
                                                        content_type='application/json')
         resp_get_book = self.app.test_client().get('/books/1')
         self.book1.update(data_to_be_changed)
-        self.assertEqual(resp_patch_book.status_code, 200)
+        self.assertEqual(resp_patch_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
     def test_full_replacement_of_the_book(self):
@@ -56,14 +55,14 @@ class TestBookEntity(CommonTestSettings, TestCase):
                                                    content_type='application/json')
         resp_get_book = self.app.test_client().get('/books/2')
         self.book1.update(self.book2)
-        self.assertEqual(resp_put_book.status_code, 200)
+        self.assertEqual(resp_put_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
     def test_delete_the_book(self):
         resp_delete_book = self.app.test_client().delete('/books/1')
         resp_get_book = self.app.test_client().get('/books')
         self.assertEqual(resp_get_book.json, [])
-        self.assertEqual(resp_delete_book.status_code, 200)
+        self.assertEqual(resp_delete_book.status_code, 204)
 
 
 if __name__ == '__main__':
