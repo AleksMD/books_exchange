@@ -1,3 +1,11 @@
+import os
+import dotenv
+
+
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+dotenv.load_dotenv(env_path)
+
+
 class BasicConfig:
     DEBUG = False
     TESTING = False
@@ -20,15 +28,17 @@ class BasicSMTPConfig:
 
 class DevelopmentConfig(BasicConfig, BasicSMTPConfig):
     DEBUG = True
-    PG_USER = 'temp_user'
-    PG_PASSWORD = 'temp_password'
-    PG_HOST = 'localhost'
-    PG_PORT = 5432
-    PG_DATABASE = 'test_bookshare'
+    PG_USER = os.getenv('PG_USER')
+    PG_PASSWORD = os.getenv('PG_PASSWORD')
+    PG_HOST = os.getenv('PG_HOST')
+    PG_PORT = os.getenv('PG_PORT')
+    PG_DATABASE = os.getenv('PG_DATABASE')
     SQLALCHEMY_DATABASE_URI = f'postgresql://{PG_USER}:{PG_PASSWORD}' \
                               f'@{PG_HOST}:{PG_PORT}/{PG_DATABASE}'
-    MAIL_USERNAME = 'test_username'
-    MAIL_PASSWORD = 'test_password'
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = os.getenv('MAIL_PORT')
 
 class TestingConfig(DevelopmentConfig):
     TESTING = True
@@ -46,6 +56,6 @@ CONFIG_MAP = {'test': TestingConfig,
 def get_config(env):
 
     if not isinstance(env, str):
-        raise ValueError('Name of configuration object should be a string')
+        raise ValueError('Name of configuration object must be a string')
 
     return CONFIG_MAP.get(env, BasicConfig)
