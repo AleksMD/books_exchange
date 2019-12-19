@@ -1,7 +1,6 @@
 import json
 import unittest
 from extensions import db
-from api.db_models.user_model import Users
 from tests.general_test_settings import CommonTestSettings
 
 

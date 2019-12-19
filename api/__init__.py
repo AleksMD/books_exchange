@@ -3,6 +3,7 @@ from api.blueprints import (book_blueprint,
                             user_blueprint)
 from flask_restful import Api
 from api.resources.book_resource import Book
+from api.resources.mail_resource import SendMail
 from api.resources.user_resource import User, HideBook, BooksBeingRead, WantToRead, UserWithDetails, UnHideBook
 from api.resources.library_resource import Libraries
 
@@ -24,3 +25,5 @@ user_api.add_resource(WantToRead, '/users/all_wishes', '/users/<int:user_id>/wis
                       '/users/<int:user_id>/update_wish_list/add_book/<int:book_id>',
                       '/users/<int:user_id>/update_wish_list/remove_book/<int:book_id>')
 user_api.add_resource(UserWithDetails, '/all_users_with_details', '/user_with_details/<int:user_id>')
+
+user_api.add_resource(SendMail, '/send_email')
