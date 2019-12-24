@@ -9,7 +9,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Prerequisites
 
-You should have at least Python version 3.6 and PostgresSQL database installed on your local machine to be able to use this application. All dependencies are listed in #requirements.txt To install the latter simply enter in either terminal or a prompt the following command:
+You should have at least Python version 3.6 and PostgresSQL database installed on your local machine to be able to use this application. All dependencies are listed in **requirements.txt** To install the latter simply enter in either terminal or a prompt the following command:
 
 ```
 pip install -r requirements.txt
