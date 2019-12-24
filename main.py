@@ -3,7 +3,8 @@ from extensions import db, migrate, mail
 from config import get_config
 from api.blueprints import (book_blueprint,
                             library_blueprint,
-                            user_blueprint)
+                            user_blueprint,
+                            home_page)
 
 
 def create_app(env='dev'):
@@ -15,6 +16,7 @@ def create_app(env='dev'):
     app.register_blueprint(user_blueprint)
     app.register_blueprint(book_blueprint)
     app.register_blueprint(library_blueprint)
+    app.register_blueprint(home_page)
     db.create_all(app=app)
     migrate.init_app(app, db)
     return app

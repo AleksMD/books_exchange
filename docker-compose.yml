@@ -1,0 +1,8 @@
+version: "3"
+services:
+        books_sharing:
+                build: .
+                ports:
+                - 8000:8000
+                - 5432:5432
+                network_mode: "host"

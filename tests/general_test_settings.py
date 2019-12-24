@@ -6,7 +6,7 @@ from main import create_app
 
 class CommonTestSettings(TestCase):
     def setUp(self) -> None:
-        self.app = create_app('dev')
+        self.app = create_app('test')
         self.app.app_context().push()
         db.drop_all()
         db.create_all()

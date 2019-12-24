@@ -1,4 +1,3 @@
-
 from extensions import db
 from api.db_models.library_model import want_to_read, reading_now
 

@@ -1,4 +1,3 @@
-from api.db_models.library_model import reading_now
 from extensions import db
 
 

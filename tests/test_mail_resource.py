@@ -63,6 +63,5 @@ class TestMailResource(CommonTestSettings, unittest.TestCase):
                     self.assertEqual(*case)
 
 
-
 if __name__ == '__main__':
     unittest.main()

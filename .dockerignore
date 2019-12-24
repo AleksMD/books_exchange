@@ -1,0 +1,4 @@
+*.md
+venv
+migrations
+__pycache__

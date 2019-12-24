@@ -7,6 +7,7 @@ dotenv.load_dotenv(env_path)
 
 
 class BasicConfig:
+    HOST = '0.0.0.0'
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
@@ -44,6 +45,7 @@ class DevelopmentConfig(BasicConfig, BasicSMTPConfig):
 
 class TestingConfig(DevelopmentConfig):
     TESTING = True
+    PRESERVE_CONTEXT_ON_EXCEPTION = True
 
 
 class ProductionConfig(BasicConfig):

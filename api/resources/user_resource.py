@@ -1,11 +1,9 @@
 from flask import request, json
 from flask_restful import Resource, marshal_with
-from sqlalchemy import or_, and_
 from sqlalchemy.orm import contains_eager
 
 from api.blueprints.parsers import user_parser_put
 from api.db_models.book_model import Books
-from api.db_models.library_model import reading_now
 from api.db_models.user_model import Users
 from extensions import db
 from api.structures.user_structure import user_wish_list_structure, user_currently_reading, \
@@ -15,12 +13,6 @@ from api.structures.user_structure import user_wish_list_structure, user_current
 class User(Resource):
     @marshal_with(general_user_structure)
     def get(self, user_id=None):
-        data = request.get_json()
-        if user_id:
-            return Users.query.filter_by(user_id=user_id).first_or_404()
-        if data:
-            return Users.query.filter_by(**data).first_or_404()
-
         return Users.query.all()
 
     def post(self):
@@ -28,10 +20,11 @@ class User(Resource):
         user = Users(**data)
         db.session.add(user)
         db.session.commit()
-        return 201
+        return 'User was successfully created', 201
 
-    def put(self, user_id):
+    def put(self):
         data = user_parser_put.parse_args()
+        user_id = data.pop('user_id') if data and 'user_id' in data else None
         user_to_be_updated = Users.query.filter_by(user_id=user_id).first_or_404()
         for key, value in data.items():
             if value:
@@ -39,23 +32,31 @@ class User(Resource):
         db.session.commit()
         return f'User {user_to_be_updated.name} was successfully updated'
 
-    def patch(self, user_id):
-        user_to_update = Users.query.filter_by(user_id=user_id).first_or_404()
-        for key, value in request.get_json().items():
-            setattr(user_to_update, key, value)
-        return 200
+    def patch(self):
+        data = request.get_json()
+        user_id = data.pop('user_id') if data and 'user_id' in data else None
+        if user_id:
+            user_to_update = db.session.query(Users).filter_by(user_id=user_id).first_or_404()
+            for key, value in data.items():
+                setattr(user_to_update, key, value)
+        return 'User info was updated', 200
 
-    def delete(self, user_id):
-        user_to_be_deleted = Users.query.filter_by(user_id=user_id).first_or_404()
-        db.session.delete(user_to_be_deleted)
-        db.session.commit()
-        return f'User with id: {user_id} was deleted from database', 204
+    def delete(self):
+        data = request.get_json()
+        user_id = data.pop('user_id') if data and 'user_id' in data else None
+        if user_id:
+            user_to_be_deleted = Users.query.filter_by(user_id=user_id).first_or_404()
+            db.session.delete(user_to_be_deleted)
+            db.session.commit()
+            return f'User with id: {user_id} was deleted from database', 204
+        return 'Something went wrong. Please, try later', 400
 
 
 class UserWithDetails(User):
     @marshal_with(detailed_user_structure)
-    def get(self, user_id=None):
+    def get(self):
         data = request.get_json()
+        user_id = data.pop('user_id') if data and 'user_id' in data else None
         if user_id:
             user = db.session.query(Users).filter_by(user_id=user_id).first_or_404()
             return self.filtrate_hidden_books_from_client_view(user)
@@ -66,7 +67,7 @@ class UserWithDetails(User):
                 users_to_return.append(self.filtrate_hidden_books_from_client_view(user))
             return users_to_return
         return db.session.query(Users).join(Users.library).filter(Books.hidden == False). \
-            options(contains_eager(Users.library)).all()
+            options(contains_eager(Users.library)).all(), 200
 
     @staticmethod
     def filtrate_hidden_books_from_client_view(user):
@@ -85,9 +86,10 @@ class UserWithDetails(User):
         data_templ_to_return['wish_list'] = user.wish_list
         return data_templ_to_return
 
+
 class BooksBeingRead(Resource):
     @marshal_with(user_currently_reading)
-    def get(self, user_id=None, **kwargs):
+    def get(self, user_id=None):
         response = []
         if user_id:
             user = Users.query.filter_by(user_id=user_id).first_or_404()
@@ -108,48 +110,58 @@ class BooksBeingRead(Resource):
         data_templ_to_return['books_being_read'] = books
         return data_templ_to_return
 
-    def post(self, user_id=None, book_id=None):
-        book = Books.query.filter_by(book_id=book_id).first_or_404()
-        user = Users.query.filter_by(user_id=user_id).first_or_404()
-        user.books_being_read.append(book)
-        db.session.commit()
-        return 'Book successfully appended to your current reader\'s list', 201
+    def post(self, user_id=None):
+        book_id = request.get_json().get('book_id')
+        if user_id and book_id:
+            book = Books.query.filter_by(book_id=book_id).first_or_404()
+            user = Users.query.filter_by(user_id=user_id).first_or_404()
+            user.books_being_read.append(book)
+            db.session.commit()
+            return 'Book successfully appended to your current reader\'s list', 201
+        return 'Probably you did not fill in fields properly', 400
 
-    def delete(self, user_id=None, book_id=None, **kwargs):
+    def delete(self, user_id=None):
+        book_id = request.get_json().get('book_id')
         if user_id and book_id:
             user = Users.query.filter_by(user_id=user_id).first_or_404()
             book = Books.query.filter_by(book_id=book_id).first_or_404()
             user.books_being_read.remove(book)
             db.session.commit()
             return 'Book was successfully removed from your current reader\'s list', 204
+        return 'Probably you did not fill in fields properly', 400
 
 
 class WantToRead(Resource):
     @marshal_with(user_wish_list_structure)
-    def get(self, user_id=None, **kwargs):
+    def get(self, user_id=None):
         if user_id:
             return Users.query.filter_by(user_id=user_id).first_or_404()
         return Users.query.all(), 200
 
-    def post(self, user_id=None, book_id=None, **kwargs):
+    def post(self, user_id=None):
+        book_id = request.get_json().get('book_id')
         if user_id and book_id:
             user = Users.query.filter_by(user_id=user_id).first_or_404()
             book = Books.query.filter_by(book_id=book_id).first_or_404()
             user.wish_list.append(book)
             db.session.commit()
             return 'Book appended to your wish list', 201
+        return 'Probably you did not fill in fields properly', 400
 
-    def delete(self, user_id=None, book_id=None, **kwargs):
+    def delete(self, user_id=None):
+        book_id = request.get_json().get('book_id')
         if user_id and book_id:
             user = Users.query.filter_by(user_id=user_id).first_or_404()
             book = Books.query.filter_by(book_id=book_id).first_or_404()
             user.wish_list.remove(book)
             db.session.commit()
             return 'Book was successfully removed from your wish list', 204
+        return 'Probably you did not fill in fields properly', 400
 
 
 class HideBook(Resource):
-    def patch(self, user_id=None, book_id=None):
+    def patch(self, user_id=None):
+        book_id = request.get_json().get('book_id')
         if user_id and book_id:
             book_to_be_hidden = Books.query.filter_by(owner=user_id, book_id=book_id).first_or_404()
             book_to_be_hidden.hidden = True

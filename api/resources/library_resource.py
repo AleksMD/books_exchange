@@ -32,7 +32,8 @@ class Libraries(Resource):
             return 'Book successfully added to your library.', 201
         return 'You should provide a user ID in order to append book to the library', 400
 
-    def delete(self, user_id=None, book_id=None):
+    def delete(self, user_id=None):
+        book_id = request.get_json().get('book_id')
         user = Users.query.filter_by(user_id=user_id).first_or_404()
         book = Books.query.filter_by(book_id=book_id).first_or_404()
         user.library.remove(book)

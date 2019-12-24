@@ -15,11 +15,14 @@ class TestBookEntity(CommonTestSettings, TestCase):
         self.book1.update({'owner': {'name': self.user2['name'], 'email': self.user2['email']}, 'current_reader': []})
 
     def test_post_new_book(self):
-        book_to_post = json.dumps(self.book2)
-        resp_post_book = self.app.test_client().post('/books/add_new_book/1',
+        book_id = json.dumps({'book_id': self.book1['book_id']})
+        book_to_post = json.dumps({'user_id': self.user1['user_id'], **self.book2})
+        resp_post_book = self.app.test_client().post('/books/add_new_book',
                                                      data=book_to_post,
                                                      content_type='application/json')
-        resp_get_book = self.app.test_client().get('/books/1')
+        resp_get_book = self.app.test_client().get('/books',
+                                                   data=book_id,
+                                                   content_type='application/json')
         self.assertEqual(resp_post_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
@@ -29,7 +32,10 @@ class TestBookEntity(CommonTestSettings, TestCase):
         self.assertEqual(resp_get_book.status_code, 200)
 
     def test_get_particular_book_by_id(self):
-        resp_get_book = self.app.test_client().get('/books/1')
+        book_id = json.dumps({'book_id': self.book1['book_id']})
+        resp_get_book = self.app.test_client().get('/books',
+                                                   data=book_id,
+                                                   content_type='application/json')
         self.assertEqual(resp_get_book.json, self.book1)
         self.assertEqual(resp_get_book.status_code, 200)
 
@@ -43,23 +49,35 @@ class TestBookEntity(CommonTestSettings, TestCase):
 
     def test_partially_modifying_existing_book(self):
         data_to_be_changed = {'translator': 'Cambridge linguistic center'}
-        resp_patch_book = self.app.test_client().patch('/books/1', data=json.dumps(data_to_be_changed),
+        data_to_send = json.dumps({'book_id': self.book1['book_id'], **data_to_be_changed})
+        resp_patch_book = self.app.test_client().patch('/books/update_the_book', data=data_to_send,
                                                        content_type='application/json')
-        resp_get_book = self.app.test_client().get('/books/1')
+        book_id = json.dumps({'book_id': self.book1['book_id']})
+        resp_get_book = self.app.test_client().get('/books',
+                                                   data=book_id,
+                                                   content_type='application/json')
         self.book1.update(data_to_be_changed)
         self.assertEqual(resp_patch_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
     def test_full_replacement_of_the_book(self):
-        resp_put_book = self.app.test_client().put('/books/1', data=json.dumps(self.book2),
+        data = json.dumps({'old_book': {**self.book1}, 'new_book': {**self.book2}})
+        resp_put_book = self.app.test_client().put('/books/replace_the_book',
+                                                   data=data,
                                                    content_type='application/json')
-        resp_get_book = self.app.test_client().get('/books/2')
+        resp_get_book = self.app.test_client().get('/books',
+                                                   data=json.dumps({'book_id': self.book2['book_id']}),
+                                                   content_type='application/json'
+                                                   )
         self.book1.update(self.book2)
         self.assertEqual(resp_put_book.status_code, 201)
         self.assertEqual(resp_get_book.json, self.book1)
 
     def test_delete_the_book(self):
-        resp_delete_book = self.app.test_client().delete('/books/1')
+        book_id = json.dumps({'book_id': self.book1['book_id']})
+        resp_delete_book = self.app.test_client().delete('/books',
+                                                         data=book_id,
+                                                         content_type='application/json')
         resp_get_book = self.app.test_client().get('/books')
         self.assertEqual(resp_get_book.json, [])
         self.assertEqual(resp_delete_book.status_code, 204)

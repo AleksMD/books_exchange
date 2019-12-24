@@ -8,7 +8,7 @@ user_parser.add_argument(
     'email', type=str, location=['form', 'json', 'args']
 )
 user_parser.add_argument(
-    'id', type=int, location=['form', 'json', 'args']
+    'user_id', type=int, location=['form', 'json', 'args']
 )
 user_parser_put = user_parser.copy()
 user_parser_put.replace_argument(
