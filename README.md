@@ -77,18 +77,31 @@ python3 manage.py runserver
 
 ```
 In the root page of the localhost - 127.0.0.1:5000/ (port 5000 is a default).
-If you see following JSON in the window of your browser:
+If the start of this app was succussfull you see map of main endpoints of API. It looks like something like the below:
 
 ```
-{"body": "Welcome to the Book Sharing service"}
-
+{
+  "endpoints": [
+    {
+      "resource": {
+        "url": "/books",
+        "description": "Returns either list of all books in the database (except hidden) or particular book if requested"
+      }
+    },
+    {
+      "resource": {
+        "url": "/books/add_new_book",
+        "description": "Add new book to the database (except hidden)"
+      }
+    },
+# and many more...
 ```
 it means that everything works fine.
 
 See next section to understand how you can test this app.
 
 ## Running the tests
-There are 34 test cases for this application.
+There are lots of test cases for this application.
 To run all of those use following command:
 
 ```
