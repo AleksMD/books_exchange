@@ -12,7 +12,10 @@ from api.structures.user_structure import user_wish_list_structure, user_current
 
 class User(Resource):
     @marshal_with(general_user_structure)
-    def get(self, user_id=None):
+    def get(self):
+        data = request.get_json()
+        if data and 'user_id' in data:
+            return Users.query.filter_by(user_id=data.get('user_id')).first()
         return Users.query.all()
 
     def post(self):

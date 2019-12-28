@@ -20,12 +20,6 @@ pip install -r requirements.txt
 
 Clone this repo onto your local machine by the following command:
 
-### ssh
-```
-git clone git@github.com:AleksMD/books_sharing.git
-
-```
-
 ### https
 ```
 git clone https://github.com/AleksMD/books_sharing.git
