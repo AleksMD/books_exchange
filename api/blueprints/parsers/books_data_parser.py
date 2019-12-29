@@ -25,23 +25,6 @@ books_parser.add_argument(
 
 
 books_parser_put = books_parser.copy()
-#books_parser_put.replace_argument(
- #   'name',
-  #  required=True,
-   # help='This field cannot be empty.')
-#books_parser_put.replace_argument(
- #   'author',
-  #  required=True,
-   # help='This field cannot be empty.')
-#books_parser_put.replace_argument(
- #   'edition', type=str, location=['form', 'json', 'args'],
-  #  required=True,
-   # help='This field cannot be empty.')
-
-#books_parser_put.replace_argument(
- #   'year_of_publication', type=int, location=['form', 'json', 'args'],
-  #  required=True,
-   # help='This field cannot be empty.')
 books_parser_put.add_argument('new_book',
                               type=str,
                               location='json',
