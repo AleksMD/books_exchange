@@ -3,4 +3,4 @@ COPY . app/books_sharing
 WORKDIR app/books_sharing
 RUN pip install -r requirements.txt
 EXPOSE 8000
-CMD python3 -m manage runserver
+CMD python3 -m manage runserver 0.0.0.0:8000

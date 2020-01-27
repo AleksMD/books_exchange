@@ -124,25 +124,50 @@ volumes:
 
 services:
   db:
-    image: postgres:latest
+    build: ./db
+    ports:
+        - 5432:5432
     volumes:
       - database_data:/var/lib/postgresql/data
 
   api:
-    build: ./api
-    expose:
-      - 8080
+    build: .
     ports:
-      - 8080:8080
+      - 8000:8000
     volumes:
       - ./api:/usr/src/app/
     links:
       - db
     environment:
-      - PGHOST=db
-      - PGDATABASE=postgres
-      - PGUSER=postgres
+      - PG_HOST=db
+      - PG_DATABASE=postgres_test_db
+      - PG_USER=postgres_test_user
+      - PG_PASSWORD=any_password_you_know
+      - PG_PORT=5432
+    command: "python manage.py runserver --host=0.0.0.0 --port=8000"
+    depends_on:
+        - db
 ``` 
+### Be Aware
+That if on your local machine PostgresSQL has been already installed you have two options to avoid conccurrency between two instances of Postgres that are both listening port 5432.
+The first one is temporarely disable PostgresSQL on your local machine by the following command:
+```
+sudo systemctl stop postgresql # use 'restart' instead of 'stop' to revert                                # it back
+```
+The second one is simply change ports for db in 'docker-compose.yml' file:
+```
+db:
+    ...
+    ports:
+    -5433:5433
+    ...
+api:
+    ...
+    environment:
+    ...
+    - PG_PORT=5433
+    ...
+```
 ## Built With
 
 * [Python3.7](https://www.python.org) - The programming language of the app
