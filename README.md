@@ -61,7 +61,7 @@ CREATE USER your_user_name WITH PASSWORD 'your_password';
 
 Grant access to the database to the user:
 ```
-GRANT ALL PRIVILEGES ON name_of_your_app_database TO your_user_name;
+GRANT ALL PRIVILEGES ON DATABASE name_of_your_app_database TO your_user_name;
 ```
 
 After database was created and all variables was added to .env file you are ready to start.
